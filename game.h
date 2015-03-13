@@ -17,9 +17,11 @@ typedef struct {
 	ALLEGRO_EVENT_QUEUE *event_queue;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_EVENT ev;
-
+	ALLEGRO_MAP *map;
+	int map_x;
+	int map_y;
+	int total_map_width;
+	int total_map_height;
 } game_loop;
-
-void init_game_loop(game_loop *gl);
 
 #endif		/* GAME_H_ */
