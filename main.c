@@ -118,8 +118,24 @@ static void process_event_timer(game_loop *gl, player *pl, ALLEGRO_MAP *map, int
 			collide(pl, FLOOR);
 		}
 	}
-	
-	pl->x += pl->velocity_x;
+
+	int next_x = pl->x + pl->velocity_x;
+	if (pl->velocity_x > 0) {
+		if ((!is_colliding(map, next_x + pl->boundx, pl->y - pl->boundy))
+			&& (!is_colliding(map, next_x + pl->boundx, pl->y - pl->boundy - 1))) {
+			pl->x = next_x;
+		} else {
+			pl->x = next_x - ((next_x + pl->boundx) % al_get_tile_width(map));
+		}
+	} else if (pl->velocity_x < 0) {
+		if ((!is_colliding(map, next_x - pl->boundx, pl->y - pl->boundy))
+			&& (!is_colliding(map, next_x - pl->boundx, pl->y + pl->boundy - 1))) {
+			pl->x = next_x;
+		} else {
+			pl->x = next_x + al_get_tile_width(map) - ((next_x - pl->boundx) % al_get_tile_width(map));
+		}
+	}
+	//pl->x += pl->velocity_x;
 	//pl->y += pl->velocity_y;
 
 	if (pl->x > WIDTH) {
