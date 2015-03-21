@@ -38,7 +38,7 @@ static void init_game_loop(game_loop *gl) {
 	gl->done = false;
 	gl->redraw = false;
 	gl->is_game_over = false;
-	memset(&gl->keys[5], false, sizeof(*gl->keys));
+	memset(&gl->keys, false, sizeof(gl->keys));
 	srand(time(NULL));
 	al_start_timer(gl->timer);
 }
@@ -47,6 +47,8 @@ static void process_event_timer(game_loop *gl, player *pl) {
 	gl->redraw = true;
 	
 	player_update(gl, pl);
+	player_update_fireball(pl);
+	player_collide_fireball(gl, pl);
 }
 
 static void process_event_key_down(game_loop *gl, player *pl) {
@@ -69,6 +71,10 @@ static void process_event_key_down(game_loop *gl, player *pl) {
 	case ALLEGRO_KEY_SPACE:
 		gl->keys[SPACE] = true;
 		break;
+	case ALLEGRO_KEY_A:
+		gl->keys[KEY_A] = true;
+		player_spawn_fireball(pl);
+		break;
 	}
 }
 
@@ -89,6 +95,9 @@ static void process_event_key_up(game_loop *gl, player *pl) {
 	case ALLEGRO_KEY_SPACE:
 		gl->keys[SPACE] = false;
 		break;
+	case ALLEGRO_KEY_A:
+		gl->keys[KEY_A] = false;
+		break;
 	}
 }
 
@@ -98,6 +107,7 @@ static void redraw(game_loop *gl, player *pl) {
 	if (!gl->is_game_over) {
 		al_draw_map_region(gl->map, gl->map_x, gl->map_y, WIDTH, HEIGHT, 0, 0, 0);
 		player_draw(pl);
+		player_draw_fireball(pl);
 	}
 	al_flip_display();
 	al_clear_to_color(al_map_rgb(0, 0, 0));

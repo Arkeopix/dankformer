@@ -4,15 +4,16 @@
 #define  WIDTH  840
 #define  HEIGHT  680
 #define  FPS 60
+#define  NBR_KEYS 6
 
-enum { UP, DOWN, LEFT, RIGHT, SPACE };
+enum { UP, DOWN, LEFT, RIGHT, SPACE, KEY_A };
 typedef enum {FLOOR, CEILING} collision_event;
 
 typedef struct {
 	bool done;
 	bool redraw;
 	bool is_game_over;
-	bool keys[5];
+	bool keys[NBR_KEYS];
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_EVENT_QUEUE *event_queue;
 	ALLEGRO_TIMER *timer;

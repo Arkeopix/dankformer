@@ -25,6 +25,65 @@ static void _player_collide(player *pl, collision_event event) {
 	}
 }
 
+
+void	player_collide_fireball(game_loop *gl, player *pl) {
+	for (int i = 0; i < NBR_SPELL; i++) {
+		if (pl->spells[i].live) {
+			if (_player_is_colliding(gl->map, pl->spells[i].x, pl->spells[i].y)) {
+				pl->spells[i].live = false;
+			}
+		}
+	}
+}
+
+void	player_draw_fireball(player *pl) {
+	for (int i = 0; i < NBR_SPELL; i++) {
+		al_draw_filled_circle(pl->spells[i].x, pl->spells[i].y, 3, al_map_rgb(255,0,0));
+	}
+}
+
+void 	player_update_fireball(player *pl) {
+	for (int i = 0; i < NBR_SPELL; i++) {
+		if (pl->spells[i].live) {
+			if (pl->spells[i].dir == PRIGHT) {
+				pl->spells[i].x += pl->spells[i].speed;
+			} else {
+				pl->spells[i].x -= pl->spells[i].speed;
+			}
+			if (pl->spells[i].x > WIDTH
+				|| pl->spells[i].x < 0) { 
+				pl->spells[i].live = false;
+			}
+		}
+	}
+}
+
+void	player_spawn_fireball(player *pl) {
+	for (int i = 0; i < NBR_SPELL; i++) {
+		if (!pl->spells[i].live) {
+			pl->spells[i].x = pl->x;
+			pl->spells[i].y = pl->y;
+			pl->spells[i].live = true;
+			if (pl->velocity_x > 0) {
+				pl->spells[i].dir = PRIGHT;
+			}
+			else {
+				pl->spells[i].dir = PLEFT;
+			}
+			break; /* we break out of the loop because we only want to cast one fireball */
+		}
+	}
+}
+
+void	init_fireballs(fireball fb[]) {
+	for (int i = 0; i < NBR_SPELL; i++) {
+		fb[i].x = 0;
+		fb[i].y = 0;
+		fb[i].speed = 10;
+		fb[i].live = false;
+	}
+}
+
 /* 
  * update the player position, taking care of collisions and shits 
  */
@@ -141,5 +200,6 @@ void init_player(player *player, const int x, const int y) {
 	player->jumping = false;
 	player->bound_y = 5;
 	player->bound_x = 5;
+	init_fireballs(player->spells);
 }
 
